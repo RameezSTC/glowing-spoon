@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  cognito-app-rameez
+
+  Sample SAM Template for cognito-app-rameez
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 10
+
+    LoggingConfig:
+      LogFormat: JSON
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: app/
+      Handler: app.Handler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      Events:
+        Express:
+          Type: Api
+          Properties:
+            Path: /{proxy}
+            Method: any
+
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Ref: ApplicationResourceGroup
+      AutoConfigurationEnabled: "true"
+Outputs:
+  ExpressApi:
+    Description: API Gateway endpoint URL for Prod stage for Hello World function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  ExpressFunction:
+    Description: Express Lambda Function ARN
+    Value: !GetAtt ExpressFunction.Arn
+  ExpressFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value: !GetAtt ExpressFunctionRole.Arn
