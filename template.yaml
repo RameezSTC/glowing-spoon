@@ -21,8 +21,8 @@ Resources:
         Express:
           Type: Api
           Properties:
-            Path: /{proxy+}
-            Method: any
+            Path: /hello
+            Method: GET
 Outputs:
   ExpressApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
